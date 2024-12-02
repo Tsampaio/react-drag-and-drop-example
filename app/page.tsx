@@ -16,6 +16,7 @@ export default function TodoList() {
   const [newTodo, setNewTodo] = useState('');
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   const addTodo = () => {
     if (newTodo.trim()) {
@@ -29,8 +30,8 @@ export default function TodoList() {
 
   const handleDragStart = useCallback((e: React.DragEvent, position: number) => {
     dragItem.current = position;
-    const draggedElement = e.currentTarget as HTMLDivElement;
-    draggedElement.classList.add('dragging');
+    setIsDragging(true);
+    e.dataTransfer?.setData('text/plain', ''); // Required for Firefox
   }, []);
 
   const handleDragEnter = useCallback((e: React.DragEvent, position: number) => {
@@ -47,12 +48,10 @@ export default function TodoList() {
     }
   }, [todos]);
 
-  const handleDragEnd = useCallback((e: React.DragEvent) => {
-    const draggedElement = e.currentTarget as HTMLDivElement;
-    draggedElement.classList.remove('dragging');
-    
+  const handleDragEnd = useCallback(() => {
     dragItem.current = null;
     dragOverItem.current = null;
+    setIsDragging(false);
   }, []);
 
   return (
@@ -85,7 +84,18 @@ export default function TodoList() {
             onDragEnter={(e) => handleDragEnter(e, index)}
             onDragEnd={handleDragEnd}
             onDragOver={(e) => e.preventDefault()}
-            className="todo-item p-3 bg-gray-100 rounded-md cursor-move transition-all duration-300 ease-in-out"
+            className={`
+              todo-item 
+              p-3 
+              bg-gray-100 
+              rounded-md 
+              cursor-move 
+              transition-all 
+              duration-300 
+              ease-in-out
+              ${isDragging && dragItem.current === index ? 'opacity-0' : ''}
+              ${isDragging && dragItem.current !== index ? 'opacity-50' : ''}
+            `}
           >
             {todo.text}
           </div>
