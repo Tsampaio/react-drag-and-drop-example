@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.todo-item {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.todo-item.dragging {
+  opacity: 0.7;
+  transform: scale(1.05);
+  background-color: #e6f2ff;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+.todo-list {
+  position: relative;
+}
